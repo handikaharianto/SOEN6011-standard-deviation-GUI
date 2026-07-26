@@ -1,0 +1,5 @@
+# Third-party libraries installed
+
+# Add your dependencies here, one per line, e.g.:
+# numpy==1.26.0
+# matplotlib==3.8.0
