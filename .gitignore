@@ -3,6 +3,9 @@ venv/
 .venv/
 env/
 
+# Spec/reference markdown (untracked reference only — never committed)
+deliverable1.md
+
 # Python
 __pycache__/
 *.py[cod]
