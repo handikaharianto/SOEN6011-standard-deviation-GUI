@@ -26,8 +26,17 @@ Python source code follows [PEP 8](https://peps.python.org/pep-0008/).
 Check all source files from the project root with:
 
 ```bash
-python -m pycodestyle gui.py standard_deviation
+python -m flake8 gui.py standard_deviation
 ```
+
+Flake8 is installed with the other project dependencies from
+`requirements.txt`. An empty checker result followed by exit code `0` means
+that no violations were found.
+
+The previous `pycodestyle` verification snapshot is retained below. Replace
+it with a Flake8 snapshot after running the command above.
+
+![Successful pycodestyle PEP 8 check](docs/pycodestyle-pep8-check.png)
 
 ## Releases and versioning
 
