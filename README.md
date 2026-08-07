@@ -20,6 +20,21 @@ pip install -r requirements.txt
 deactivate
 ```
 
+## Releases and versioning
+
+Releases follow [Semantic Versioning](https://semver.org/) and are
+created automatically from Conventional Commit messages when commits are
+pushed to `main`:
+
+- `fix: ...` creates a patch release.
+- `feat: ...` creates a minor release.
+- `feat!: ...` or a `BREAKING CHANGE:` footer creates a major release.
+- `docs:`, `style:`, `test:`, and `chore:` commits do not create a release.
+
+Python Semantic Release updates `standard_deviation/_version.py`, creates
+an annotated Git tag, and publishes the corresponding GitHub Release. The
+current version is available in Python as `standard_deviation.__version__`.
+
 ## Adding a new library
 
 ```bash

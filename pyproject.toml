@@ -1,0 +1,11 @@
+[tool.semantic_release]
+commit_parser = "conventional"
+tag_format = "v{version}"
+version_variables = [
+    "standard_deviation/_version.py:__version__",
+]
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+

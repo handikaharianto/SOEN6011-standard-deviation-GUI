@@ -11,6 +11,7 @@ Public API
   ``from standard_deviation import StandardDeviationError``.
 """
 
+from standard_deviation._version import __version__
 from standard_deviation.algorithm import (
     MAX_NUMERIC_LIMIT,
     calculate_std_dev_welford,
@@ -30,6 +31,7 @@ from standard_deviation.sqrt import MAX_ITERATIONS, calculate_sqrt
 
 
 __all__ = [
+    "__version__",
     "MAX_ITERATIONS",
     "MAX_NUMERIC_LIMIT",
     "calculate_sqrt",
