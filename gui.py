@@ -248,14 +248,18 @@ class StandardDeviationApp:
             # Defensive — should never happen because the radio buttons
             # only emit known values.
             self._set_status(
-                f"Internal error: unknown mode '{mode}'. Please restart the application.",
+                f"Internal error: unknown mode '{mode}'. Please restart "
+                "the application.",
                 COLOR_ERROR,
             )
             return
 
         try:
             values = parse_numbers(raw_text)
-            result = calculate_std_dev_welford(values, is_population=is_population)
+            result = calculate_std_dev_welford(
+                values,
+                is_population=is_population,
+            )
 
         except EmptyInputError as exc:
             self._set_status(
@@ -281,10 +285,17 @@ class StandardDeviationApp:
 
         except InsufficientDataError as exc:
             count = getattr(exc, "count", 0)
+            if mode == MODE_SAMPLE:
+                required_values = (
+                    "Need at least 2 numbers for sample standard deviation, "
+                    "or 1 for population."
+                )
+            else:
+                required_values = "Need at least 1 number."
             self._set_status(
                 f"{exc} (currently {count} value"
                 f"{'s' if count != 1 else ''}). "
-                f"{'Need at least 2 numbers for sample standard deviation, or 1 for population.' if mode == MODE_SAMPLE else 'Need at least 1 number.'}",
+                f"{required_values}",
                 COLOR_ERROR,
             )
             return
@@ -307,8 +318,8 @@ class StandardDeviationApp:
 
         except ConvergenceError as exc:
             self._set_status(
-                f"Square root did not converge. Please retry with simpler values. "
-                f"({exc})",
+                "Square root did not converge. Please retry with simpler "
+                f"values. ({exc})",
                 COLOR_ERROR,
             )
             return
@@ -355,7 +366,8 @@ class StandardDeviationApp:
             # Catch-all for any future domain error that may not have
             # a dedicated clause above.
             self._set_status(
-                f"Unexpected standard-deviation error: {type(exc).__name__}: {exc}.",
+                "Unexpected standard-deviation error: "
+                f"{type(exc).__name__}: {exc}.",
                 COLOR_ERROR,
             )
             return
@@ -366,7 +378,8 @@ class StandardDeviationApp:
             # anticipate. The status label is also updated.
             messagebox.showerror(
                 "Unexpected error",
-                f"An unexpected error occurred:\n\n{type(exc).__name__}: {exc}",
+                "An unexpected error occurred:\n\n"
+                f"{type(exc).__name__}: {exc}",
             )
             self._set_status(
                 f"Internal error: {type(exc).__name__}: {exc}.",
@@ -378,7 +391,8 @@ class StandardDeviationApp:
         self._set_result(str(result))
         mode_label = "Population" if is_population else "Sample"
         self._set_status(
-            f"✓ {mode_label} standard deviation calculated from {len(values)} "
+            f"✓ {mode_label} standard deviation calculated from "
+            f"{len(values)} "
             f"value{'s' if len(values) != 1 else ''}: σ = {result}",
             COLOR_SUCCESS,
         )

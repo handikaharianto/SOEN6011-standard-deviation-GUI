@@ -1,4 +1,4 @@
-"""Standard deviation calculator — from-scratch implementation with a Tkinter GUI.
+"""Standard deviation calculator with a from-scratch implementation and GUI.
 
 Public API
 ----------

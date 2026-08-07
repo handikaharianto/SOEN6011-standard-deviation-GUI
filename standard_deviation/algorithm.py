@@ -54,7 +54,8 @@ def calculate_std_dev_welford(data: list, is_population: bool) -> float:
     """
     if not isinstance(is_population, bool):
         raise InvalidModeError(
-            f"is_population must be a bool, got {type(is_population).__name__}: "
+            "is_population must be a bool, got "
+            f"{type(is_population).__name__}: "
             f"{is_population!r}"
         )
 
@@ -65,7 +66,8 @@ def calculate_std_dev_welford(data: list, is_population: bool) -> float:
     for index, item in enumerate(data, start=1):
         if isinstance(item, bool) or not isinstance(item, (int, float)):
             raise InvalidNumberError(
-                f"Invalid number at position {index}: {type(item).__name__} {item!r}",
+                f"Invalid number at position {index}: "
+                f"{type(item).__name__} {item!r}",
                 position=index,
             )
         if not _is_finite(item):

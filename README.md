@@ -13,11 +13,20 @@ python3.12 -m venv venv
 # Activate it
 source venv/bin/activate
 
-# Install dependencies (none required — Tkinter is in the stdlib)
+# Install dependencies
 pip install -r requirements.txt
 
 # When you're done, deactivate
 deactivate
+```
+
+## Code style
+
+Python source code follows [PEP 8](https://peps.python.org/pep-0008/).
+Check all source files from the project root with:
+
+```bash
+python -m pycodestyle gui.py standard_deviation
 ```
 
 ## Releases and versioning
@@ -81,6 +90,7 @@ Keyboard shortcuts:
 │   ├── algorithm.py          # Welford's calculate_std_dev_welford
 │   └── parser.py             # parse_numbers (string → list[float])
 ├── README.md
-├── requirements.txt          # (empty — no third-party deps)
+├── requirements.txt          # Project dependencies and style tooling
+├── setup.cfg                 # PEP 8 checker configuration
 └── .gitignore
 ```

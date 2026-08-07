@@ -6,7 +6,10 @@ project's standard deviation algorithm calls into here instead of
 """
 
 from standard_deviation.builtin_helpers import _abs
-from standard_deviation.exceptions import ConvergenceError, NegativeVarianceError
+from standard_deviation.exceptions import (
+    ConvergenceError,
+    NegativeVarianceError,
+)
 
 
 # Safety iteration limit. The Babylonian method converges quadratically,
@@ -56,7 +59,8 @@ def calculate_sqrt(value: float, tolerance: float = 1e-7) -> float:
         iterations += 1
         if iterations > MAX_ITERATIONS:
             raise ConvergenceError(
-                f"Babylonian square root did not converge after {MAX_ITERATIONS} "
+                "Babylonian square root did not converge after "
+                f"{MAX_ITERATIONS} "
                 f"iterations for value={value}"
             )
     return x

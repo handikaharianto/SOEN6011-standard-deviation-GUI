@@ -56,7 +56,8 @@ def _sum(values: Iterable[float]) -> float:
     for item in values:
         if isinstance(item, bool) or not isinstance(item, (int, float)):
             raise TypeError(
-                f"_sum expected a numeric value, got {type(item).__name__}: {item!r}"
+                "_sum expected a numeric value, got "
+                f"{type(item).__name__}: {item!r}"
             )
         total = total + item
     return total
@@ -94,10 +95,14 @@ def _power(base: float, exponent: int) -> float:
     """
     if isinstance(exponent, bool) or not isinstance(exponent, int):
         raise TypeError(
-            f"_power exponent must be int, got {type(exponent).__name__}: {exponent!r}"
+            "_power exponent must be int, got "
+            f"{type(exponent).__name__}: {exponent!r}"
         )
     if exponent < 0:
-        raise ValueError(f"_power does not support negative exponents, got {exponent}")
+        raise ValueError(
+            "_power does not support negative exponents, got "
+            f"{exponent}"
+        )
 
     result = 1
     current_base = base

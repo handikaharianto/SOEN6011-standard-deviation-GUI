@@ -45,12 +45,16 @@ def parse_numbers(raw_text: str) -> list[float]:
         ``position`` attribute is the 1-based index of the token.
     """
     if raw_text is None:
-        raise EmptyInputError("No numbers detected. Enter at least one numeric value.")
+        raise EmptyInputError(
+            "No numbers detected. Enter at least one numeric value."
+        )
 
     tokens = _TOKEN_PATTERN.findall(raw_text)
 
     if not tokens:
-        raise EmptyInputError("No numbers detected. Enter at least one numeric value.")
+        raise EmptyInputError(
+            "No numbers detected. Enter at least one numeric value."
+        )
 
     values: list[float] = []
     for index, token in enumerate(tokens, start=1):
