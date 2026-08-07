@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.2.0 (2026-08-07)
+
+### Features
+
+- Add flake8 for checking the conformance of Python code
+  ([`51ea1aa`](https://github.com/handikaharianto/SOEN6011-standard-deviation-GUI/commit/51ea1aa8b5203d3cc510e463233af4a959fdd176))
+
+
 ## v1.1.0 (2026-08-07)
 
 ### Features
