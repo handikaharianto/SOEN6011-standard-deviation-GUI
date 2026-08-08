@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.5.0 (2026-08-08)
+
+### Features
+
+- Add accessibility features
+  ([`cbe10b2`](https://github.com/handikaharianto/SOEN6011-standard-deviation-GUI/commit/cbe10b2b9b82ac115b5ec382caa9efc0574190b3))
+
+
 ## v1.4.0 (2026-08-08)
 
 ### Features
