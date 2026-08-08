@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.6.0 (2026-08-08)
+
+### Features
+
+- Add test cases using PyUnit
+  ([`667c08b`](https://github.com/handikaharianto/SOEN6011-standard-deviation-GUI/commit/667c08bd645ddb29064d6da605613d0723d45b1c))
+
+
 ## v1.5.0 (2026-08-08)
 
 ### Features
