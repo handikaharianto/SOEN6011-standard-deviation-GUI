@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import re
 import tkinter as tk
+from collections.abc import Callable
 from tkinter import messagebox, ttk
 
 from standard_deviation import (
@@ -40,6 +41,7 @@ COLOR_SUCCESS = "#176b35"
 COLOR_ERROR = "#a61b1b"
 COLOR_NEUTRAL = "#334155"
 COLOR_ERROR_BACKGROUND = "#ffe2e2"
+COLOR_FOCUS = "#1d4ed8"
 
 FONT_HEADING = ("TkDefaultFont", 18, "bold")
 FONT_BODY = ("TkDefaultFont", 11)
@@ -89,8 +91,12 @@ class StandardDeviationApp:
 
         # These widgets are constructed by the section builders below.
         self.text_input: tk.Text
+        self.example_button: ttk.Button
         self.clear_button: ttk.Button
         self.undo_button: ttk.Button
+        self.help_button: ttk.Button
+        self.population_radio: ttk.Radiobutton
+        self.sample_radio: ttk.Radiobutton
         self.mode_help_label: ttk.Label
         self.calculate_button: ttk.Button
         self.result_display: ttk.Label
@@ -100,7 +106,7 @@ class StandardDeviationApp:
         self._build_widgets()
         self._bind_shortcuts()
         self._update_mode_help()
-        self.root.after_idle(self.text_input.focus_set)
+        self.root.after_idle(self._finish_initial_layout)
 
     # --- widget construction ----------------------------------------------
 
@@ -191,10 +197,15 @@ class StandardDeviationApp:
 
         input_label = ttk.Label(
             input_header,
-            text="Numbers separated by commas, spaces, or new lines",
+            text="Data: numbers separated by commas, spaces, or new lines",
             style="Body.TLabel",
+            underline=0,
         )
         input_label.grid(row=0, column=0, sticky=tk.W)
+        input_label.bind(
+            "<Button-1>",
+            lambda _event: self.text_input.focus_set(),
+        )
 
         input_summary = ttk.Label(
             input_header,
@@ -218,6 +229,10 @@ class StandardDeviationApp:
             relief=tk.SOLID,
             padx=7,
             pady=7,
+            takefocus=True,
+            highlightthickness=2,
+            highlightcolor=COLOR_FOCUS,
+            highlightbackground=COLOR_MUTED,
         )
         self.text_input.grid(row=0, column=0, sticky="nsew")
         self.text_input.tag_configure(
@@ -226,6 +241,12 @@ class StandardDeviationApp:
             foreground=COLOR_ERROR,
         )
         self.text_input.bind("<<Modified>>", self._on_input_modified)
+        self.text_input.bind("<Tab>", self._focus_next_from_text)
+        self.text_input.bind("<Shift-Tab>", self._focus_previous_from_text)
+        self.text_input.bind(
+            "<ISO_Left_Tab>",
+            self._focus_previous_from_text,
+        )
 
         scrollbar = ttk.Scrollbar(
             text_frame,
@@ -248,16 +269,19 @@ class StandardDeviationApp:
         input_actions = ttk.Frame(input_section)
         input_actions.grid(row=3, column=0, sticky="ew")
 
-        ttk.Button(
+        self.example_button = ttk.Button(
             input_actions,
             text="Try example",
             command=self._on_try_example,
-        ).pack(side=tk.LEFT, padx=(0, 7))
+            underline=4,
+        )
+        self.example_button.pack(side=tk.LEFT, padx=(0, 7))
 
         self.clear_button = ttk.Button(
             input_actions,
             text="Clear data",
             command=self._on_clear,
+            underline=0,
         )
         self.clear_button.pack(side=tk.LEFT, padx=(0, 7))
 
@@ -265,15 +289,18 @@ class StandardDeviationApp:
             input_actions,
             text="Undo change",
             command=self._on_undo_change,
+            underline=0,
         )
         self.undo_button.pack(side=tk.LEFT, padx=(0, 7))
         self.undo_button.state(["disabled"])
 
-        ttk.Button(
+        self.help_button = ttk.Button(
             input_actions,
             text="How to use",
             command=self._show_help,
-        ).pack(side=tk.RIGHT)
+            underline=0,
+        )
+        self.help_button.pack(side=tk.RIGHT)
 
     def _build_mode_section(self, parent: ttk.Frame) -> None:
         mode_section = ttk.LabelFrame(
@@ -289,21 +316,35 @@ class StandardDeviationApp:
         )
         mode_section.columnconfigure(0, weight=1)
 
-        ttk.Radiobutton(
+        self.population_radio = ttk.Radiobutton(
             mode_section,
             text="Population - the data contains the whole group",
             value=MODE_POPULATION,
             variable=self.mode_var,
             command=self._on_mode_change,
-        ).grid(row=0, column=0, sticky=tk.W, pady=(0, 3))
+            underline=0,
+        )
+        self.population_radio.grid(
+            row=0,
+            column=0,
+            sticky=tk.W,
+            pady=(0, 3),
+        )
 
-        ttk.Radiobutton(
+        self.sample_radio = ttk.Radiobutton(
             mode_section,
             text="Sample - the data represents part of a larger group",
             value=MODE_SAMPLE,
             variable=self.mode_var,
             command=self._on_mode_change,
-        ).grid(row=1, column=0, sticky=tk.W, pady=(0, 5))
+            underline=0,
+        )
+        self.sample_radio.grid(
+            row=1,
+            column=0,
+            sticky=tk.W,
+            pady=(0, 5),
+        )
 
         self.mode_help_label = ttk.Label(
             mode_section,
@@ -322,12 +363,16 @@ class StandardDeviationApp:
             text="Calculate standard deviation",
             command=self._on_calculate,
             style="Primary.TButton",
+            underline=1,
         )
         self.calculate_button.grid(row=0, column=0, sticky="ew")
 
         shortcut = ttk.Label(
             calculate_row,
-            text="Shortcut: Ctrl+Enter or Cmd+Enter",
+            text=(
+                "Keyboard: Tab moves focus · Ctrl/Cmd+Enter calculates · "
+                "F1 opens help"
+            ),
             style="Muted.TLabel",
         )
         shortcut.grid(row=1, column=0, pady=(3, 0))
@@ -374,17 +419,68 @@ class StandardDeviationApp:
     # --- keyboard and responsive behavior ---------------------------------
 
     def _bind_shortcuts(self) -> None:
-        self.root.bind_all(
-            "<Control-Return>",
-            lambda _event: self._on_calculate(),
+        self._bind_action("<Control-Return>", self._on_calculate)
+        self._bind_action("<Command-Return>", self._on_calculate)
+        self._bind_action("<Control-l>", self._on_clear)
+        self._bind_action("<Command-l>", self._on_clear)
+        self._bind_action("<F1>", self._show_help)
+
+        # Underlined mnemonics provide direct keyboard access on platforms
+        # that conventionally expose Alt shortcuts.
+        self._bind_action("<Alt-d>", self.text_input.focus_set)
+        self._bind_action("<Alt-e>", self._on_try_example)
+        self._bind_action("<Alt-c>", self._on_clear)
+        self._bind_action("<Alt-u>", self._on_undo_change)
+        self._bind_action("<Alt-h>", self._show_help)
+        self._bind_action(
+            "<Alt-p>",
+            lambda: self._select_mode(MODE_POPULATION),
         )
-        self.root.bind_all(
-            "<Command-Return>",
-            lambda _event: self._on_calculate(),
+        self._bind_action(
+            "<Alt-s>",
+            lambda: self._select_mode(MODE_SAMPLE),
         )
-        self.root.bind_all("<Control-l>", lambda _event: self._on_clear())
-        self.root.bind_all("<Command-l>", lambda _event: self._on_clear())
-        self.root.bind_all("<F1>", lambda _event: self._show_help())
+        self._bind_action("<Alt-a>", self._on_calculate)
+
+    def _bind_action(
+        self,
+        sequence: str,
+        action: Callable[[], object],
+    ) -> None:
+        """Bind an action and prevent the shortcut from entering text."""
+
+        def run_action(_event: tk.Event) -> str:
+            action()
+            return "break"
+
+        self.root.bind_all(sequence, run_action)
+
+    def _select_mode(self, mode: str) -> None:
+        self.mode_var.set(mode)
+        self._on_mode_change()
+
+    def _focus_next_from_text(self, _event: tk.Event) -> str:
+        """Let Tab leave the multiline input instead of trapping focus."""
+        self.example_button.focus_set()
+        return "break"
+
+    def _focus_previous_from_text(self, _event: tk.Event) -> str:
+        """Let Shift+Tab move backward from the multiline input."""
+        self.calculate_button.focus_set()
+        return "break"
+
+    def _finish_initial_layout(self) -> None:
+        """Respect larger system fonts and start focus at the data field."""
+        self.root.update_idletasks()
+        required_width = max(660, self.root.winfo_reqwidth())
+        required_height = max(640, self.root.winfo_reqheight())
+        available_width = max(660, self.root.winfo_screenwidth() - 80)
+        available_height = max(640, self.root.winfo_screenheight() - 80)
+        self.root.minsize(
+            min(required_width, available_width),
+            min(required_height, available_height),
+        )
+        self.text_input.focus_set()
 
     def _on_window_resize(self, event: tk.Event) -> None:
         if event.widget is not self.root:
@@ -411,7 +507,12 @@ class StandardDeviationApp:
         self.result_caption_var.set(RESULT_CAPTION_READY)
 
     def _clear_error_highlight(self) -> None:
+        had_invalid_selection = bool(
+            self.text_input.tag_ranges("invalid_value")
+        )
         self.text_input.tag_remove("invalid_value", "1.0", tk.END)
+        if had_invalid_selection:
+            self.text_input.tag_remove(tk.SEL, "1.0", tk.END)
 
     def _highlight_token(self, position: int) -> None:
         raw_text = self.text_input.get("1.0", "end-1c")
@@ -423,6 +524,8 @@ class StandardDeviationApp:
         start = f"1.0+{match.start()}c"
         end = f"1.0+{match.end()}c"
         self.text_input.tag_add("invalid_value", start, end)
+        self.text_input.tag_add(tk.SEL, start, end)
+        self.text_input.mark_set(tk.INSERT, start)
         self.text_input.see(start)
         self.text_input.focus_set()
 
@@ -556,10 +659,14 @@ class StandardDeviationApp:
             "2. Choose Population when the data is the whole group, or "
             "Sample when it is part of a larger group.\n\n"
             "3. Select Calculate standard deviation. Invalid values are "
-            "highlighted so you can correct them.\n\n"
+            "selected and highlighted so you can correct them.\n\n"
             "Keyboard shortcuts:\n"
+            "Tab or Shift+Tab - move between controls\n"
             "Ctrl+Enter or Cmd+Enter - calculate\n"
             "Ctrl+L or Cmd+L - clear data\n"
+            "Alt+D - focus the data field\n"
+            "Alt+P or Alt+S - choose Population or Sample\n"
+            "Alt+A - calculate\n"
             "F1 - show this help",
             parent=self.root,
         )
@@ -605,8 +712,8 @@ class StandardDeviationApp:
         except InvalidNumberError as exc:
             self._highlight_token(exc.position)
             self._set_status(
-                f"Input error: {exc}. Correct the highlighted value and "
-                "calculate again.",
+                f"Input error: {exc}. The invalid text is selected; "
+                "type a replacement and calculate again.",
                 "error",
             )
             return

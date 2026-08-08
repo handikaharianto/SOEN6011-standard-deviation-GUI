@@ -123,14 +123,22 @@ standard deviation, then click **Calculate**.
 
 Keyboard shortcuts:
 
+- `Tab` / `Shift+Tab` — Move between controls
 - `Ctrl+Enter` / `Cmd+Enter` — Calculate
 - `Ctrl+L` / `Cmd+L` — Clear
 - `F1` — Show usage help
 
+## Accessibility
+
+The GUI aims to support keyboard, low-vision, and assistive-technology users
+through native controls, logical focus movement, non-color status text,
+selected and highlighted invalid input, plain-language recovery guidance, and
+layout sizing that responds to larger system fonts.
+
 ## User interface design principles
 
-The GUI applies all seven principles from the course's *User Interface Design
-Principles* notes. The applicability decision, mind map, design rationale, and
+The GUI applies all seven principles from the course's _User Interface Design
+Principles_ notes. The applicability decision, mind map, design rationale, and
 implementation traceability are documented in
 [docs/uidp-mind-map.md](docs/uidp-mind-map.md).
 
