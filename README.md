@@ -125,6 +125,14 @@ Keyboard shortcuts:
 
 - `Ctrl+Enter` / `Cmd+Enter` — Calculate
 - `Ctrl+L` / `Cmd+L` — Clear
+- `F1` — Show usage help
+
+## User interface design principles
+
+The GUI applies all seven principles from the course's *User Interface Design
+Principles* notes. The applicability decision, mind map, design rationale, and
+implementation traceability are documented in
+[docs/uidp-mind-map.md](docs/uidp-mind-map.md).
 
 ## Project structure
 
