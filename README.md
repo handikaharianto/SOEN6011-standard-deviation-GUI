@@ -38,6 +38,35 @@ it with a Flake8 snapshot after running the command above.
 
 ![Successful pycodestyle PEP 8 check](docs/pycodestyle-pep8-check.png)
 
+## Debugging with pdb
+
+The calculation can be inspected with Python's built-in debugger. Start a
+population-standard-deviation calculation under `pdb` from the project root:
+
+```bash
+python -c 'import pdb; from standard_deviation.algorithm import calculate_std_dev_welford; result = pdb.Pdb().runcall(calculate_std_dev_welford, [2, 4, 4, 4, 5, 5, 7, 9], True); print(f"Result: {result}")'
+```
+
+At the `(Pdb)` prompt, these commands stop on the fourth loop iteration,
+inspect Welford's intermediate state, and finish the calculation:
+
+```text
+break 88
+ignore 1 3
+continue
+p data
+p index, item
+p count, mean, m2
+where
+clear 1
+continue
+```
+
+The following snapshot records an actual debugger session run against
+`standard_deviation/algorithm.py`:
+
+![pdb session inspecting Welford's algorithm](docs/pdb-debugger-snapshot.png)
+
 ## Releases and versioning
 
 Releases follow [Semantic Versioning](https://semver.org/) and are
