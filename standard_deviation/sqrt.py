@@ -50,12 +50,14 @@ def calculate_sqrt(value: float, tolerance: float = 1e-7) -> float:
     if value == 0:
         return 0
 
-    x = value
-    last_x = 0
+    approximation = value
+    previous_approximation = 0
     iterations = 0
-    while _abs(x - last_x) > tolerance:
-        last_x = x
-        x = 0.5 * (x + (value / x))
+    while _abs(approximation - previous_approximation) > tolerance:
+        previous_approximation = approximation
+        approximation = 0.5 * (
+            approximation + (value / approximation)
+        )
         iterations += 1
         if iterations > MAX_ITERATIONS:
             raise ConvergenceError(
@@ -63,4 +65,4 @@ def calculate_sqrt(value: float, tolerance: float = 1e-7) -> float:
                 f"{MAX_ITERATIONS} "
                 f"iterations for value={value}"
             )
-    return x
+    return approximation

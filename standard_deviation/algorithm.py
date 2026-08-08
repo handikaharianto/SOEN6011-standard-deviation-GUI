@@ -61,7 +61,7 @@ def calculate_std_dev_welford(data: list, is_population: bool) -> float:
 
     count = 0
     mean = 0.0
-    m2 = 0.0  # sum of squared deviations from the current mean
+    squared_deviation_sum = 0.0
 
     for index, item in enumerate(data, start=1):
         if isinstance(item, bool) or not isinstance(item, (int, float)):
@@ -80,20 +80,23 @@ def calculate_std_dev_welford(data: list, is_population: bool) -> float:
         delta = item - mean
         mean = mean + (delta / count)
         delta2 = item - mean
-        m2 = m2 + (delta * delta2)
+        squared_deviation_sum += delta * delta2
 
         # Guard against overflow on either side of zero. Variance is
         # always non-negative, so a negative ``m2`` means numerical
         # noise has crept in; we treat it as overflow as well.
-        if not _is_finite(mean) or not _is_finite(m2):
+        if not _is_finite(mean) or not _is_finite(squared_deviation_sum):
             raise NumericOverflowError(
                 f"Numerical overflow detected at position {index}: "
-                f"mean={mean}, m2={m2}"
+                f"mean={mean}, m2={squared_deviation_sum}"
             )
-        if _abs(m2) > MAX_NUMERIC_LIMIT or _abs(mean) > MAX_NUMERIC_LIMIT:
+        if (
+            _abs(squared_deviation_sum) > MAX_NUMERIC_LIMIT
+            or _abs(mean) > MAX_NUMERIC_LIMIT
+        ):
             raise NumericOverflowError(
                 f"Numerical overflow detected at position {index}: "
-                f"mean={mean}, m2={m2}"
+                f"mean={mean}, m2={squared_deviation_sum}"
             )
 
     # Validate dataset size
@@ -110,8 +113,8 @@ def calculate_std_dev_welford(data: list, is_population: bool) -> float:
         )
 
     if is_population:
-        variance = m2 / count
+        variance = squared_deviation_sum / count
     else:
-        variance = m2 / (count - 1)
+        variance = squared_deviation_sum / (count - 1)
 
     return calculate_sqrt(variance)

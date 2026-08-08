@@ -29,14 +29,25 @@ Check all source files from the project root with:
 python -m flake8 gui.py standard_deviation
 ```
 
-Flake8 is installed with the other project dependencies from
-`requirements.txt`. An empty checker result followed by exit code `0` means
-that no violations were found.
+Flake8 combines PyFlakes error detection, PEP 8 checks through pycodestyle,
+and McCabe complexity checks. It is installed with the other project
+dependencies from `requirements.txt`. An empty result followed by exit code
+`0` means that no violations were found.
 
-The previous `pycodestyle` verification snapshot is retained below. Replace
-it with a Flake8 snapshot after running the command above.
+## Static analysis with Pylint
 
-![Successful pycodestyle PEP 8 check](docs/pycodestyle-pep8-check.png)
+Pylint 3.3.7 is pinned in `requirements.txt` for compatibility with Python
+3.12. Run static analysis against all project Python sources with:
+
+```bash
+python -m pylint gui.py standard_deviation
+```
+
+The command reports diagnostics and a score. Exit code `0` and a score of
+`10.00/10` indicate that the configured analysis passed without findings.
+The following snapshot records an actual full-project Pylint run:
+
+![Successful Pylint static analysis](docs/pylint-static-analysis.png)
 
 ## Debugging with pdb
 
@@ -56,7 +67,7 @@ ignore 1 3
 continue
 p data
 p index, item
-p count, mean, m2
+p count, mean, squared_deviation_sum
 where
 clear 1
 continue
@@ -128,7 +139,7 @@ Keyboard shortcuts:
 │   ├── algorithm.py          # Welford's calculate_std_dev_welford
 │   └── parser.py             # parse_numbers (string → list[float])
 ├── README.md
-├── requirements.txt          # Project dependencies and style tooling
+├── requirements.txt          # Project dependencies and quality tooling
 ├── setup.cfg                 # PEP 8 checker configuration
 └── .gitignore
 ```

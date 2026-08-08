@@ -61,6 +61,8 @@ MODE_SAMPLE = "sample"
 # Application
 # ---------------------------------------------------------------------------
 
+# This Tkinter controller intentionally owns its widget and state attributes.
+# pylint: disable-next=too-many-instance-attributes,too-few-public-methods
 class StandardDeviationApp:
     """Top-level controller for the calculator window."""
 
@@ -228,6 +230,10 @@ class StandardDeviationApp:
 
     # --- event handlers -----------------------------------------------------
 
+    # Mapping each error to a distinct GUI message intentionally makes this
+    # boundary handler branch-and-return heavy.
+    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-branches,too-many-statements
     def _on_calculate(self) -> None:
         # Wipe the previous result so an old value can never be confused
         # with a new one.
@@ -372,7 +378,10 @@ class StandardDeviationApp:
             )
             return
 
-        except Exception as exc:  # last resort
+        # This is the application's last-resort GUI boundary. Domain errors
+        # are handled specifically above.
+        # pylint: disable-next=broad-exception-caught
+        except Exception as exc:
             # Show a modal for genuinely unexpected failures so the user
             # knows the program hit something the developer didn't
             # anticipate. The status label is also updated.

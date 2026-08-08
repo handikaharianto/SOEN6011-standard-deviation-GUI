@@ -13,7 +13,7 @@ can rely on these helpers to fail loudly rather than silently
 propagating ``NaN`` or ``inf`` through a computation.
 """
 
-from typing import Iterable
+from collections.abc import Iterable
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +128,7 @@ def _is_finite(value: float) -> bool:
           into a non-finite value when its magnitude is added to itself.
     """
     # NaN is the only float where ``value == value`` is False.
+    # pylint: disable-next=comparison-with-itself
     if value != value:
         return False
     # Both positive and negative infinity fail ``value - value == 0``
