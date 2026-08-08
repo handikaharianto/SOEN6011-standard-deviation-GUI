@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.0 (2026-08-08)
+
+### Features
+
+- Reimplement GUI based on the User Interface Design Principles
+  ([`0489039`](https://github.com/handikaharianto/SOEN6011-standard-deviation-GUI/commit/0489039a0b96550cd2aad6750b1c8a196039923a))
+
+
 ## v1.3.0 (2026-08-08)
 
 ### Features
